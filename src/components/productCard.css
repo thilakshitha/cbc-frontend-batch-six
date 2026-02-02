@@ -1,0 +1,15 @@
+.card{
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    
+    background-color: blueviolet;
+}
+
+.fancy-border{
+    border: 2px solid red;
+    box-shadow: 0 4px 8px black;
+
+}
