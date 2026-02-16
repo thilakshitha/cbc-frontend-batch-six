@@ -35,7 +35,7 @@ export default function AddProductPage(){
         console.log(token)
 
         if(token == null){
-            window.location.href = "/login";
+            navigate("/login");
             return;
         }
 
