@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import uploadFile from "../../utils/mediaUpload";
 
 export default function AddProductPage(){
     const [productId, setProductId] = useState("")
@@ -9,14 +10,26 @@ export default function AddProductPage(){
     const [alternativeNames, setAlternativeNames] = useState("")
     const [labelledPrice, setLabelledPrice] = useState("")
     const [price, setPrice] = useState("")
-    const [images, setImages] = useState("")
+    const [images, setImages] = useState([])
     const [description, setDescription] = useState("")
     const [stock, setStock] = useState("")
     const [isAvailable, setIsAvailable] = useState("true")
     const [category, setCategory] = useState("cream")
     const navigate = useNavigate()
 
-    function handleSubmit(){
+    async function handleSubmit(){
+
+        const promisesArray =  []
+
+        for(let i = 0; i<images.length; i++){
+           const promise = uploadFile(images[i])
+           promisesArray[i] = promise
+        }
+         const responses = await Promise.all(promisesArray)
+         console.log(responses)
+
+        
+
         const altNamesInArray = alternativeNames.split(",")
         const productData = {
          productId:productId,
@@ -24,7 +37,7 @@ export default function AddProductPage(){
          altNames:altNamesInArray,
          labelledPrice:labelledPrice,
          price:price,
-         images:[],
+         images:responses,
          description:description,
          stock:stock,
          isAvailable:isAvailable,
@@ -119,10 +132,13 @@ export default function AddProductPage(){
 
                 <div className="w-[200px]  flex  flex-col  gap-[6px]">
                     <label className="text-sm font-semibold">images</label>
-                    <input 
-                        type="text" 
-                        value={images}
-                        onChange={(e)=>{setImages(e.target.value)}}
+                    <input
+                        multiple 
+                        type="file" 
+                        
+                        onChange={(e)=>{
+                             setImages(e.target.files)
+                        }}
                         className="shadow-2xl w-full border-[1px] h-[40px] rounded-md" 
                     />
                 </div>
