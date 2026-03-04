@@ -1,28 +1,31 @@
-export default function ProductCard(props) {
-  return (
-    <div className="max-w-sm rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-shadow duration-300">
-      
-      {/* Image */}
-      <img
-        src={props.image}
-        alt={props.name}
-        className="w-full h-48 object-cover"
-      />
+import { Link } from "react-router-dom"
 
-      {/* Content */}
-      <div className="p-4">
-        <h1 className="text-lg font-semibold text-gray-800 mb-2">
-          {props.name}
-        </h1>
+export default function ProductCard(props){
+ const product = props.product
+    return(
+        <Link to={"/overview/"+product.productId} className="w-[300px] h-[400px]  shadow-2xl shrink-0 rounded-xl overflow-hidden flex flex-col">
+           <img src={product.images[0]} className="w-full h-[275px] object-cover"  />
+           <div className="w-full h-[calc(100%-275px)] bg-amber-300 flex flex-col">
+             <span className="text-gray-500 text-[12px]">{product.productId}</span>
+             <h1 className="text-lg font-bold">
+                {product.name} {" "}
+                <span className="text-gray-500 text-[12px]">{product.category}</span>
+            </h1>
+                <div>
+                    {
+                        product.labelledPrice>product.price?(
+                        <p>
+                            <span className="line-through mr-[10px]">{product.labelledPrice.toFixed(2)}</span>
+                            <span>{product.price.toFixed(2)}</span>
+                        </p>
+                    ) : (
+                       <span>{product.price.toFixed(2)}</span>
+                    )}
+                </div>
+                
+             
+           </div>
 
-        <p className="text-gray-600 mb-4">
-          Price: <span className="font-bold text-gray-900">Rs. {props.price}</span>
-        </p>
-
-        <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 active:scale-95 transition-all duration-200">
-          View More
-        </button>
-      </div>
-    </div>
-  );
+        </Link>
+    )
 }

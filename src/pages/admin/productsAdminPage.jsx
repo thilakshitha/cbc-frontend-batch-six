@@ -1,30 +1,37 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { BiPlus, BiTrash } from "react-icons/bi";
+import { BiEdit, BiPlus, BiTrash } from "react-icons/bi";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import Loader from "../../components/loader";
 
-const sampleProducts = [];
+
 
 
 export default function ProductsAdminPage(){
-   const[products,setProducts] = useState(sampleProducts)
-   const[a,setA]=useState(0)
+   const[products,setProducts] = useState([])
+   //const[a,setA]=useState(0)
+   const[isLoading, setIsLoading] = useState(true)
 
    useEffect(
     ()=>{
-      axios.get(import.meta.env.VITE_BACKEND_URL + "/api/products").then(
-    (res)=>{
-         setProducts(res.data)
+        if(isLoading){
+              axios.get(import.meta.env.VITE_BACKEND_URL + "/api/products").then(
+              (res)=>{
+                 setProducts(res.data)
+                 setIsLoading(false);
     }
    )
-    },[a]
+}
+    },[isLoading]
    )
    const navigate = useNavigate()
   
    return(
     <div className="w-full h-full  border-[3px]">
-       <table>
+       {isLoading? (
+             <Loader/>
+        ):(<table>
          <thead>
             <tr>
                 <th className="p-[10px]">image</th>
@@ -53,7 +60,7 @@ export default function ProductsAdminPage(){
                                 <td className="p-[10px]">{product.labelledPrice}</td>
                                 <td className="p-[10px]">{product.category}</td>
                                 <td className="p-[10px]">{product.stock}</td>
-                                <td className="p-[10px]">
+                                <td className="p-[10px] flex flex-row justify-center items-center">
                                     <BiTrash className="bg-red-600 p-[5px] text-3xl rounded-full text-white cursor-pointer" onClick={
                                         ()=>{
                                             const token = localStorage.getItem("token");
@@ -72,7 +79,7 @@ export default function ProductsAdminPage(){
                                                    console.log("product deleted succeessfully")
                                                    console.log(res.data)
                                                    toast.success("product deleted successfully")
-                                                   setA(a+1)
+                                                   setIsLoading(!isLoading)
                                                 }
                                             ).catch(
                                                 (error)=>{
@@ -84,6 +91,13 @@ export default function ProductsAdminPage(){
 
                                         }
                                     }/>
+                                    <BiEdit onClick={
+                                        ()=>{
+                                            navigate("/admin/updateProduct",{
+                                                state:product
+                                            })
+                                        }
+                                    } className="bg-blue-500 p-[7px] text-3xl rounded-full text-white shadow-2xl shadow-black cursor-pointer p-[7px]"/>
                                 </td>
                             </tr>
                         )
@@ -92,7 +106,7 @@ export default function ProductsAdminPage(){
                 )
             }
          </tbody>
-       </table>
+       </table>)}
         
         <Link to="/admin/newProduct"  className="fixed right-[60px] bottom-[60px] bg-black p-[20px] rounded-full shadow-2xl cursor-pointer">
             

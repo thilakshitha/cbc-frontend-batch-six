@@ -2,13 +2,14 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 import ProductCard from './components/productCard'
-import SuperProduct from './components/superProduct'
+
 import HomePage from './pages/homePage'
 import LoginPage from './pages/loginPage'
 import RegisterPage from './pages/registerPage'
 import { AdminPage } from './pages/adminPage'
 import TestPage from './pages/testPage'
 import { Toaster } from 'react-hot-toast'
+import ClientWebPage from './pages/client/clientPage'
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
              <Route path="/register" element={<RegisterPage />} />
              <Route path="/admin/*" element={<AdminPage />} />
              <Route path="/test" element={<TestPage/>}/>
+
+             <Route path="/*" element={<ClientWebPage/>}/>
           </Routes>
         
       </div>

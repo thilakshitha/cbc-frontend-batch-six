@@ -4,6 +4,7 @@ import { FaShoppingBag } from "react-icons/fa";
 import { FaUserAlt } from "react-icons/fa";
 import ProductsAdminPage from "./admin/productsAdminPage";
 import AddProductPage from "./admin/addProductAdminPage";
+import UpdateProductPage from "./admin/updateProduct";
 
 
 export function AdminPage(){
@@ -23,6 +24,7 @@ export function AdminPage(){
                    <Route path="/products" element={<ProductsAdminPage/>}/>
                    <Route path="/orders" element={<h1>orders</h1>}/>
                    <Route path="/newProduct" element={<AddProductPage/>}/>
+                   <Route path="/updateProduct" element={<UpdateProductPage/>}/>
                    
 
                 </Routes>

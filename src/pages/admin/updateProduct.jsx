@@ -1,0 +1,220 @@
+import axios from "axios";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import uploadFile from "../../utils/mediaUpload";
+
+export default function UpdateProductPage(){
+    const location = useLocation()
+
+    const [productId, setProductId] = useState(location.state.productId)
+    const [productName, setProductName] = useState(location.state.name)
+    const [alternativeNames, setAlternativeNames] = useState(location.state.altNames.join(","))
+    const [labelledPrice, setLabelledPrice] = useState(location.state.labelledPrice)
+    const [price, setPrice] = useState(location.state.price)
+    const [images, setImages] = useState([])
+    const [description, setDescription] = useState(location.state.description)
+    const [stock, setStock] = useState(location.state.stock)
+    const [isAvailable, setIsAvailable] = useState(location.state.isAvailable)
+    const [category, setCategory] = useState(location.state.category)
+
+    const navigate = useNavigate()
+    
+
+    console.log(location.state)
+
+
+    async function handleSubmit(){
+
+        const promisesArray =  []
+
+        for(let i = 0; i<images.length; i++){
+           const promise = uploadFile(images[i])
+           promisesArray[i] = promise
+        }
+         const responses = await Promise.all(promisesArray)
+         console.log(responses)
+
+        
+
+        const altNamesInArray = alternativeNames.split(",")
+
+        const productData = {
+         productId:productId,
+         name:productName,
+         altNames:altNamesInArray,
+         labelledPrice:labelledPrice,
+         price:price,
+         images:responses,
+         description:description,
+         stock:stock,
+         isAvailable:isAvailable,
+         category:category
+        }
+
+        if(responses.length == 0){
+            productData.images = location.state.images
+        }
+
+        console.log(productData)
+
+        const token = localStorage.getItem("token");
+        console.log(token)
+
+        if(token == null){
+            navigate("/login");
+            return;
+        }
+
+        axios.put(import.meta.env.VITE_BACKEND_URL + "/api/products/"+productId,productData,
+            {
+            headers:{
+                Authorization:"Bearer " + token
+            }
+        }
+         ).then(
+            (res)=>{
+                console.log("product update successfully")
+                console.log(res.data)
+                toast.success("product update successfully")
+                navigate("/admin/products")
+            }
+        ).catch(
+            (error)=>{
+                console.log("error update product",error)
+                toast.error("failed to update product")
+            }
+        )
+
+
+    }
+
+
+
+
+    return(
+        <div className="w-full h-full flex justify-center items-center">
+            <div className="w-[600px]  border-[3px] rounded-[15px] flex flex-wrap justify-between p-[40px]">
+                
+                <div className="w-[200px]  flex  flex-col  gap-[6px]">
+                    <label className="text-sm font-semibold">product id</label>
+                    <input 
+                        disabled
+                        type="text" 
+                        value={productId} 
+                        onChange={(e)=>{setProductId(e.target.value)}} 
+                        className="shadow-2xl w-full border-[1px] h-[40px] rounded-md" 
+                    />
+                </div>
+
+                <div className="w-[300px]  flex  flex-col  gap-[6px]">
+                    <label className="text-sm font-semibold">product name</label>
+                    <input 
+                        type="text" 
+                        value={productName}
+                        onChange={(e)=>{setProductName(e.target.value)}}
+                        className="shadow-2xl w-full border-[1px] h-[40px] rounded-md" 
+                    />
+                </div>
+
+                <div className="w-[500px]  flex  flex-col  gap-[6px]">
+                    <label className="text-sm font-semibold">Alternative names</label>
+                    <input 
+                        type="text" 
+                        value={alternativeNames}
+                        onChange={(e)=>{setAlternativeNames(e.target.value)}}
+                        className="shadow-2xl w-full border-[1px] h-[40px] rounded-md" 
+                    />
+                </div>
+
+                <div className="w-[200px]  flex  flex-col  gap-[6px]">
+                    <label className="text-sm font-semibold">Labled price</label>
+                    <input 
+                        type="number" 
+                        value={labelledPrice}
+                        onChange={(e)=>{setLabelledPrice(e.target.value)}}
+                        className="shadow-2xl w-full border-[1px] h-[40px] rounded-md" 
+                    />
+                </div>
+
+                <div className="w-[200px]  flex  flex-col  gap-[6px]">
+                    <label className="text-sm font-semibold">price</label>
+                    <input 
+                        type="number" 
+                        value={price}
+                        onChange={(e)=>{setPrice(e.target.value)}}
+                        className="shadow-2xl w-full border-[1px] h-[40px] rounded-md" 
+                    />
+                </div>
+
+                <div className="w-[200px]  flex  flex-col  gap-[6px]">
+                    <label className="text-sm font-semibold">images</label>
+                    <input
+                        multiple 
+                        type="file" 
+                        
+                        onChange={(e)=>{
+                             setImages(e.target.files)
+                        }}
+                        className="shadow-2xl w-full border-[1px] h-[40px] rounded-md" 
+                    />
+                </div>
+
+                <div className="w-[400px] flex flex-col gap-[6px]">
+                    <label className="text-sm font-semibold">Description</label>
+                    <textarea 
+                        value={description}
+                        onChange={(e)=>{setDescription(e.target.value)}}
+                        className="shadow-2xl w-full border-[1px] h-[40px] rounded-md" 
+                    />
+                </div>
+
+                <div className="w-[200px]  flex  flex-col  gap-[6px]">
+                    <label className="text-sm font-semibold">Stock</label>
+                    <input 
+                        type="number" 
+                        value={stock}
+                        onChange={(e)=>{setStock(e.target.value)}}
+                        className="shadow-2xl w-full border-[1px] h-[40px] rounded-md" 
+                    />
+                </div>
+
+                <div className="w-[200px]  flex  flex-col  gap-[6px]">
+                    <label className="text-sm font-semibold">is Available</label>
+                    <select 
+                        value={isAvailable}
+                        onChange={(e)=>{setIsAvailable(e.target.value)}}
+                        className="border"
+                    >
+                        <option value={true}>Available</option>
+                        <option value={false}> not Available</option>
+                    </select>
+                </div>
+
+                <div className="w-[200px]  flex  flex-col  gap-[6px] ">
+                    <label className="text-sm font-semibold">category</label>
+                    <select 
+                        value={category}
+                        onChange={(e)=>{setCategory(e.target.value)}}
+                        className="border"
+                    >
+                        <option value="cream">cream</option>
+                        <option value="face wash"> face wash</option>
+                        <option value="soap"> face wash</option>
+                        <option value="fragrance"> fragrance</option>
+                    </select>
+                </div>
+
+                <div className="w-full flex justify-center flex-row py-[20px]">
+                    <Link to={"/admin/products"} className="w-[200px] h-[50px] bg-white text-black border-2 rounded-md flex justify-center items-center" >
+                        cancel
+                    </Link>
+                    <button onClick={handleSubmit} className="w-[200px] h-[50px] bg-black text-white border-2 rounded-md flex justify-center items-center">
+                        Update product
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    )
+}
