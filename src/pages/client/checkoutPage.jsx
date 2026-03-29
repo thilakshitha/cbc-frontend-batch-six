@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 import { TbTrash } from "react-icons/tb"
@@ -11,7 +11,39 @@ export default function CheckoutPage() {
 
     const location = useLocation();
     const navigate = useNavigate();
+
+    const [user,setUser] = useState(null)
+    const [name,setName] = useState("");
+    const [address,setAddress] = useState("");
+    const [phone,setPhone] = useState(""); 
+
+    useEffect(()=>{
+        const token = localStorage.getItem("token")
+        if(token == null){
+            navigate("/login");
+            return;
+        }else{
+            axios.get(import.meta.env.VITE_BACKEND_URL + "/api/users/",{
+                headers:{
+                    Authorization: `Bearer ${token}`,
+                },
+            }).then(
+                (res)=>{
+                    setUser(res.data);
+                    setName(res.data.firstName+ " " +res.data.lastName)
+                }
+            ).catch(
+            (err)=>{
+                console.error(err)
+                toast.error("failed to fetch user details");
+                // navigate("/login");
+            }
+            )
+        }
+    },[])
+
     const [cart, setCart] = useState(location.state.items || []);
+    
 
     if(location.state.items == null){
         toast.error("please select items to checkout")
@@ -33,9 +65,13 @@ export default function CheckoutPage() {
         navigate("/login")
         return;
        }
+       if(name == "" || address == "" || phone == ""){
+        toast.error("please fill all fields");
+        return;
+       }
        const order = {
-        address: "df",
-        phone: "df",
+        address: address,
+        phone: phone,
         items: []
        };
 
@@ -108,6 +144,8 @@ export default function CheckoutPage() {
                     }
                 )
             }
+            
+
             <div className="w-[800px] h-[100px] m-[10px] shadow-2xl flex flex-row items-center justify-end p-[10px] relative">
                 <span className="font-bold text-2xl ">
                     Total: {getTotal().toLocaleString("en-US",{ minimumFractionDigits:2,maximumFractionDigits:2})}
@@ -116,6 +154,26 @@ export default function CheckoutPage() {
                 onClick={placeOrder}>
                     place order
                 </button>
+            </div>
+
+            <div className="w-[800px] h-[100px] m-[10px] shadow-2xl flex flex-row items-center justify-center p-[10px] relative">
+                <input className="w-[200px] h-[40px] border border-gray-300 rounded-lg p-[10px] m-[10px]" 
+                type="text"
+                placeholder="enter your name"
+                value = {name}
+                onChange={(e)=>setName(e.target.value)} />
+
+                <input className="w-[200px] h-[40px] border border-gray-300 rounded-lg p-[10px] m-[10px]" 
+                type="text"
+                placeholder="enter your address"
+                value = {address}
+                onChange={(e)=>setAddress(e.target.value)} />
+
+                <input className="w-[200px] h-[40px] border border-gray-300 rounded-lg p-[10px] m-[10px]" 
+                type="text"
+                placeholder="enter your phone No."
+                value = {phone}
+                onChange={(e)=>setPhone(e.target.value)} />
             </div>
 
 

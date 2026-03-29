@@ -5,6 +5,7 @@ import { FaUserAlt } from "react-icons/fa";
 import ProductsAdminPage from "./admin/productsAdminPage";
 import AddProductPage from "./admin/addProductAdminPage";
 import UpdateProductPage from "./admin/updateProduct";
+import OrdersPageAdmin from "./admin/ordersPageAdmin";
 
 
 export function AdminPage(){
@@ -22,7 +23,7 @@ export function AdminPage(){
                 <Routes path="/">
                    <Route path="/" element={<h1>dashboard</h1>}/>
                    <Route path="/products" element={<ProductsAdminPage/>}/>
-                   <Route path="/orders" element={<h1>orders</h1>}/>
+                   <Route path="/orders" element={<OrdersPageAdmin/>}/>
                    <Route path="/newProduct" element={<AddProductPage/>}/>
                    <Route path="/updateProduct" element={<UpdateProductPage/>}/>
                    
